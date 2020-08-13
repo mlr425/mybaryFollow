@@ -3,6 +3,7 @@ const express = require('express')
 const router = express.Router()
 
 const Author = require('../models/author')
+const Book = require('../models/book')
 
 //all authors route
 router.get('/', async (req,res) => {
@@ -37,8 +38,8 @@ router.post('/', async (req,res) => {
 
     try{
         const newAuthor = await author.save()
-        //res.redirect(`authors/${newAuthor.id}`)
-        res.redirect(`authors`)
+        res.redirect(`authors/${newAuthor.id}`)
+        //res.redirect(`authors`)
     } catch{
         res.render('authors/new',{
             author: author,
@@ -62,5 +63,78 @@ router.post('/', async (req,res) => {
     
 })
 
+//NOTE the get by id route needs to be defined AFTER the new author route
+//it reads from the top down, so it would match with /:id first and then take new as the id.
+//thats wrong so make it check against /new first, then /:id
+router.get('/:id', async (req,res) => {
+    try{
+        const author = await Author.findById(req.params.id)
+        const books = await Book.find({author: author.id}).limit(6).exec()
+        res.render('authors/show', {
+            author: author,
+            booksByAuthor: books
+        })
+    }catch{
+        //console.log(err)
+        res.redirect('/')
+    }
+})
+
+router.get('/:id/edit', async (req,res) => {
+    try{
+        const author = await Author.findById(req.params.id)
+        res.render('authors/edit', { author:  author })
+    }catch{
+        res.redirect('/authors')
+
+    }
+    
+})
+
+//from a browser you can only do get & post reqs, need a lib for put / delete
+//need a lib called method override 
+//NEVER use a get to handle deleting, search engines scan to index it on their pages
+//and will visit every link and possibly delete everything in ur app!
+router.put('/:id', async (req,res) => {
+    let author
+
+    try{
+        author = await Author.findById(req.params.id)
+        author.name = req.body.name
+
+        await author.save()
+        res.redirect(`/authors/${newAuthor.id}`)
+        //res.redirect(`authors`)
+    } catch{
+        if (author == null){
+            res.redirect('/')
+        }else{
+            res.render('authors/edit',{
+                author: author,
+                errorMessage: 'Error updating author'
+            })
+        }
+    }
+    
+})
+
+router.delete('/:id', async (req,res)=>{
+    let author
+
+    try{
+        author = await Author.findById(req.params.id)
+        
+
+        await author.remove()
+        //res.redirect(`/authors/${newAuthor.id}`)
+        res.redirect(`/authors`)
+    } catch{
+        if (author == null){
+            res.redirect('/')
+        }else{
+            res.redirect(`/authors/${author.id}`)
+        }
+    }
+})
 
 module.exports = router
