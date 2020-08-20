@@ -54,18 +54,18 @@ router.get('/new', async (req, res) => {
 //used to say like uploads.cover('single') or something.. bc we're using filepond (sends encoded string instead of image). so got rid of
 router.post('/', async (req,res) => {
     //const fileName = req.file != null ? req.file.filename : null
-    const book = new Book({
-        title: req.body.title,
-        author: req.body.author,
-        publishDate: new Date(req.body.publishDate),
-        pageCount: req.body.pageCount,
-        //coverImageName: fileName,
-        description: req.body.description
-    })
-
-    saveCover(book, req.body.cover)
-
     try{   
+        const book = new Book({
+            title: req.body.title,
+            author: req.body.author,
+            publishDate: new Date(req.body.publishDate),
+            pageCount: req.body.pageCount,
+            //coverImageName: fileName,
+            description: req.body.description
+        })
+    
+        saveCover(book, req.body.cover)
+
         const newBook = await book.save()
         res.redirect(`books/${newBook.id}`)
         //res.redirect(`books`)

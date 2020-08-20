@@ -97,13 +97,12 @@ router.get('/:id/edit', async (req,res) => {
 //and will visit every link and possibly delete everything in ur app!
 router.put('/:id', async (req,res) => {
     let author
-
     try{
         author = await Author.findById(req.params.id)
         author.name = req.body.name
 
-        await author.save()
-        res.redirect(`/authors/${newAuthor.id}`)
+        await author.save()         //this was newAuthor for some reason
+        res.redirect(`/authors/${author.id}`)
         //res.redirect(`authors`)
     } catch{
         if (author == null){
@@ -115,7 +114,6 @@ router.put('/:id', async (req,res) => {
             })
         }
     }
-    
 })
 
 router.delete('/:id', async (req,res)=>{

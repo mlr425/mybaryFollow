@@ -3,11 +3,8 @@
     <a class="btn btn-primary" href="/authors/<%= author.id %>/edit">Edit</a>
     <%- include('../partials/deleteForm', {url: `/authors/${author.id}`}) %>
 </div>
+
 <% if (booksByAuthor.length > 0) { %>
     <h2 class="page-header">Books by Author</h2>
-        <% booksByAuthor.forEach(book => { %>
-            <a href="/books/<%= book.id%>"></a>
-            <img height="150" width="100", src="<%= book.coverImagePath %>">
-    </a>
-    <% }) %>
-<% } %> 
+    <%- include('../partials/bookGrid',{books: booksByAuthor, large:true})%>
+<% } %>
